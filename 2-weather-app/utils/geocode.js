@@ -7,11 +7,14 @@ const geocode = (address, callback) => {
   )}.json?access_token=${geoCodeApiAccessKey}&limit=1`;
 
   request({ url: geocodeURL, json: true }, (error, response) => {
+    // Low-level error
     if (error) {
       callback("Unable to connect to locations services", undefined);
-    } else if (response.body.features.length === 0) {
+    } // Coordinate error
+    else if (response.body.features.length === 0) {
       callback("Unable to find location. Try another search", undefined);
-    } else {
+    } // Success
+    else {
       const features = response.body.features[0];
       callback(undefined, {
         latitude: features.center[1],
