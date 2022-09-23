@@ -13,6 +13,30 @@ router.post("/users", async (req, res) => {
   }
 });
 
+router.post("/users/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      throw new Error("Please provide email and password");
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error("User is not found");
+    }
+
+    const isPasswordCorrect = await user.comparePassword(password);
+    if (!isPasswordCorrect) {
+      throw new Error("Invalid password");
+    }
+
+    res.send(user);
+  } catch (e) {
+    res.status(500).send();
+  }
+});
+
 router.get("/users", async (req, res) => {
   try {
     const users = await User.find({});

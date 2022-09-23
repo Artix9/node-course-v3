@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
+    unique: true,
     required: true,
     trim: true,
     lowercase: true,
@@ -41,6 +42,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+// Hash the plain text password before saving
 userSchema.pre("save", async function (next) {
   const user = this;
 
@@ -50,6 +52,11 @@ userSchema.pre("save", async function (next) {
 
   next();
 });
+
+userSchema.methods.comparePassword = async function (canditatePassword) {
+  const isMatch = await bcrypt.compare(canditatePassword, this.password);
+  return isMatch;
+};
 
 const User = mongoose.model("User", userSchema);
 
